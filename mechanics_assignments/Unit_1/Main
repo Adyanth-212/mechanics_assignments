@@ -1,0 +1,155 @@
+import math
+import sympy as sp
+from sympy.abc import alpha
+import re
+
+def replace_expression(expr, F_val=None, R_val=None, theta_val=None):
+    """
+    Replace 'F', 'R', and 'theta' with the appropriate numeric or symbolic values
+    using regex to capture the terms dynamically.
+    """
+    if F_val is not None:
+        expr = re.sub(r'(\d*)F', lambda m: f"{F_val * (int(m.group(1)) if m.group(1) else 1)}", expr)
+
+    if R_val is not None:
+        expr = re.sub(r'(\d*)R', lambda m: f"{R_val * (int(m.group(1)) if m.group(1) else 1)}", expr)
+
+    if theta_val is not None:
+        expr = re.sub(r'(\d*)theta', lambda m: f"{theta_val * (int(m.group(1)) if m.group(1) else 1)}", expr)
+
+    return expr
+
+def check_input(params):
+    """
+    Convert inputs to SymPy symbolic expressions or numerical values.
+    """
+    if isinstance(params['Force'], str):
+        try:
+            force_expr = params['Force']
+            params['Force'] = float(eval(replace_expression(force_expr, params['Force'], params['R'], params['theta'])))
+        except:
+            params['Force'] = sp.sympify(params['Force'])
+
+    if isinstance(params['R'], str):
+        try:
+            radius_expr = params['R']
+            params['R'] = float(eval(replace_expression(radius_expr, params['Force'], params['R'], params['theta'])))
+        except:
+            params['R'] = sp.sympify(params['R'])
+
+    if isinstance(params['theta'], str):
+        try:
+            theta_expr = params['theta']
+            params['theta'] = float(eval(replace_expression(theta_expr, params['Force'], params['R'], params['theta'])))
+        except:
+            params['theta'] = sp.sympify(params['theta'])
+    elif isinstance(params['theta'], (int, float)):
+        params['theta'] = float(params['theta'])
+
+def finding_the_triangle(params):
+    """
+    Calculate triangle coordinates (X, Y, Z).
+    """
+    R = params['R']
+    theta = params['theta']
+
+    if isinstance(theta, sp.Basic):
+        theta_rad = theta
+        Z = R * sp.cos(theta_rad) - R / 2
+        Y = R * sp.sin(theta_rad)
+    else:
+        theta_rad = math.radians(theta)
+        Z = R * math.cos(theta_rad) - R / 2
+        Y = R * math.sin(theta_rad)
+
+    if isinstance(Z, sp.Basic) or isinstance(Y, sp.Basic):
+        X = sp.sqrt(Z ** 2 + Y ** 2)
+    else:
+        X = math.hypot(Z, Y)
+
+    params['X'], params['Y'], params['Z'] = X, Y, Z
+    return X, Y, Z
+
+def finding_the_angle(params):
+    """
+    Calculate angle-related values (P, T, alpha).
+    """
+    X = params['X']
+    R = params['R']
+    theta = params['theta']
+
+    if isinstance(theta, sp.Basic):
+        P = R * sp.sin(theta)
+    else:
+        P = R * math.sin(math.radians(theta))
+
+    T = P / X
+
+    if isinstance(T, sp.Basic):
+        alpha = sp.asin(T) * (180 / sp.pi)
+    else:
+        alpha = math.degrees(math.asin(T))
+
+    params['P'], params['T'], params['alpha'] = P, T, alpha
+    return P, T, alpha
+
+def moment_calculator(params):
+    """
+    Calculate moment.
+    """
+    F = params['Force']
+    R = params['R']
+    alpha = params['alpha']
+
+    if isinstance(alpha, sp.Basic):
+        moment_value = (F * R / 2) * sp.sin(alpha)
+    else:
+        moment_value = (F * R / 2) * math.sin(math.radians(alpha))
+
+    return moment_value
+
+def main():
+    """
+    Main function to run the Force-Couple System solver.
+    """
+    # Display question
+    question = """
+    The force F acts along the line MA, where M is the midpoint of the radius along the x-axis.
+    Determine the Equivalent Force couple system at O for an input angle Theta.
+    """
+    print("The Question is:")
+    print(question)
+
+    # Initialize parameters
+    params = {
+        'theta': input("Enter the angle theta (can be an expression like '2*theta' or a numeric value in degrees): "),
+        'R': input("Enter the radius R (can be an expression like 'R/2' or '2*R'): "),
+        'Force': input("Enter the Force F (can be an expression like '2*F'): ")
+    }
+
+    # Process inputs
+    check_input(params)
+
+    # Calculate triangle coordinates
+    X, Y, Z = finding_the_triangle(params)
+
+    # Calculate angle-related values
+    P, T, alpha = finding_the_angle(params)
+
+    # Calculate moment
+    moment = moment_calculator(params)
+
+    # Print results
+    print("Force Expression:", params['Force'])
+    print("Radius Expression:", params['R'])
+    print("Theta:", params['theta'])
+    print("X:", X)
+    print("Y:", Y)
+    print("Z:", Z)
+    print("P:", P)
+    print("T:", T)
+    print("Alpha:", alpha, "degrees")
+    print("Moment:", moment)
+
+if _name_ == "_main_":
+    main()

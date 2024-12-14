@@ -7,6 +7,7 @@ def display_question():
     print("Determine the force in each member of the loaded truss.")
 
 
+
 # Taking inputs from the user
 def getting_inputs():
     print("Enter the following parameters")
@@ -28,7 +29,7 @@ def getting_inputs():
     }
 
 
-# Error and nonsense handling
+#Check for erros or any nonsense
 def checking_for_errors(inputs):
     errors = []
     if inputs["distance_between_the_supports_a_and_d"] < 0:
@@ -55,45 +56,42 @@ def checking_for_errors(inputs):
     return True
 
 
+
 def main_thing():
-    #Ask the Question
+    # Ask the Question
     display_question()
-    #Get ze inputs
+    # Get ze inputs
     inputs = getting_inputs()
 
-    # Step 3: Check for errors and other nonsense
+    # Check for errors and other nonsense
     if not checking_for_errors(inputs):
         print("Errors detected in the inputs. Please restart and try again.")
         return
 
     # Step 4: Calculate angles
-    angles = finding_angles(
-        inputs["opposite_side_to_angle_theta"],
-        inputs["adjacent_side_to_angle_theta"]
-    )
-    print(f"Calculated Angles (in degrees): {angles[1]}, {angles[3]}, {angles[5]}")
+    solver_instance = Solver(params=inputs)
+    angles = solver_instance.finding_angles()
+    print(f"Calculated Angles (in degrees): {angles[0]}, {angles[1]}, {angles[2]}")
 
     # Step 5: Solve for forces at Joint B
-    joint_b_solution = solving_for_joint_b()
+    joint_b_solution = solver_instance.solving_for_joint_b()
     print("Solutions for Joint B:")
     print(f"  Y-Equation: {joint_b_solution[0]}")
     print(f"  X-Equation: {joint_b_solution[1]}")
-    print(f"  Solutions: {joint_b_solution[2]}")
 
     # Step 6: Solve for forces at Joint C
-    joint_c_solution = solving_for_joint_c()
+    joint_c_solution = solver_instance.solving_for_joint_c()
     print("Solutions for Joint C:")
     print(f"  X-Equation: {joint_c_solution[0]}")
     print(f"  Y-Equation: {joint_c_solution[1]}")
-    print(f"  Solutions: {joint_c_solution[2]}")
 
     # Step 7: Solve for forces at Joint D
-    joint_d_solution = solving_for_joint_d()
+    joint_d_solution = solver_instance.solving_for_joint_d()
     print("Solutions for Joint D:")
-    print(f"  Y-Equation: {joint_d_solution[1]}")
-    print(f"  Solution: {joint_d_solution[0]}")
+    print(f"  Solution: {joint_d_solution}")
 
     # Final Output
     print("\nSolution to the loaded truss problem has been determined successfully!")
     print("Refer to the above outputs for details.")
+
 

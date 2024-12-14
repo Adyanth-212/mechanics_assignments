@@ -1,0 +1,11 @@
+# parameters.py
+class Parameters:
+    def __init__(self):
+        self.distance_between_the_supports_a_and_d = 0
+        self.distance_between_a_and_c = 0
+        self.horizontal_distance_between_d_and_c = 0
+        self.horizontal_distance_between_d_and_b = 0
+        self.f1 = 0
+        self.f2 = 0
+        self.opposite_side_to_angle_theta = 0
+        self.adjacent_side_to_angle_theta = 0

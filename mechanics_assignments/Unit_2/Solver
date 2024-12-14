@@ -1,29 +1,25 @@
 import math
 from sympy import symbols, Eq, solve
-
 class Solver:
     def __init__(self, params):
         self.params = params  # Store the parameters object
         self.theta_1 = self.theta_2 = self.theta_3 = None
 
     def finding_angles(self):
-        opposite_side = self.params.opposite_side_to_angle_theta
-        adjacent_side = self.params.adjacent_side_to_angle_theta
+        opposite_side = self.params['opposite_side_to_angle_theta']
+        adjacent_side = self.params['adjacent_side_to_angle_theta']
 
         theta_1 = math.atan(opposite_side / adjacent_side)
         theta_1_degrees = math.degrees(theta_1)
 
-        distance_to_e = self.params.distance_between_the_supports_a_and_d - (
-            self.params.horizontal_distance_between_d_and_c / math.tan(theta_1)
+        distance_to_e = self.params['distance_between_the_supports_a_and_d'] - (
+            self.params['horizontal_distance_between_d_and_c'] / math.tan(theta_1)
         )
-        theta_2 = math.atan(distance_to_e / self.params.horizontal_distance_between_d_and_b)
+        theta_2 = math.atan(distance_to_e / self.params['horizontal_distance_between_d_and_b'])
         theta_2_degrees = math.degrees(theta_2)
 
-        theta_3 = math.atan(distance_to_e / self.params.horizontal_distance_between_d_and_c)
-        theta_3_degrees = math.degrees(theta_3)
+        theta_3 = math.atan(distance_to_e / self.params['horizontal_distance_between_d_and_c'])
 
-        self.theta_1, self.theta_2, self.theta_3 = theta_1, theta_2, theta_3
-        return theta_1_degrees, theta_2_degrees, theta_3_degrees
 
     def solving_for_joint_b(self):
         force_in_a_b, force_in_b_c = symbols('force_in_a_b force_in_b_c')

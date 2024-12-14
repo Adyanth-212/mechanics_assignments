@@ -1,0 +1,99 @@
+from mechanics_assignments.Unit_2.solver import Solver
+
+
+# Displaying the question
+def display_question():
+    print("The Question is: ")
+    print("Determine the force in each member of the loaded truss.")
+
+
+# Taking inputs from the user
+def getting_inputs():
+    print("Enter the following parameters")
+    distance_between_the_supports_a_and_d = float(input("Distance between the supports A and D: "))
+    horizontal_distance_between_d_and_c = float(input("Horizontal distance between D and C: "))
+    horizontal_distance_between_d_and_b = float(input("Horizontal distance between D and B: "))
+    f1 = float(input("Force F1: "))
+    f2 = float(input("Force F2: "))
+    opposite_side_to_angle_theta = float(input("Opposite side to angle theta: "))
+    adjacent_side_to_angle_theta = float(input("Adjacent side to angle theta: "))
+    return {
+        "distance_between_the_supports_a_and_d": distance_between_the_supports_a_and_d,
+        "horizontal_distance_between_d_and_c": horizontal_distance_between_d_and_c,
+        "horizontal_distance_between_d_and_b": horizontal_distance_between_d_and_b,
+        "f1": f1,
+        "f2": f2,
+        "opposite_side_to_angle_theta": opposite_side_to_angle_theta,
+        "adjacent_side_to_angle_theta": adjacent_side_to_angle_theta,
+    }
+
+
+# Error and nonsense handling
+def checking_for_errors(inputs):
+    errors = []
+    if inputs["distance_between_the_supports_a_and_d"] < 0:
+        errors.append("Distance can't be negative")
+    if inputs["horizontal_distance_between_d_and_c"] < 0:
+        errors.append("Distance can't be negative")
+    if inputs["horizontal_distance_between_d_and_b"] < 0:
+        errors.append("Distance can't be negative")
+    if inputs["f1"] < 0:
+        errors.append(
+            "Error: if F1 is negative, it means it's positive since we are taking downward forces as positive. If the force is upwards, the truss loses contact with roller at D and hence breaks apart.")
+    if inputs["f2"] < 0:
+        errors.append(
+            "Error: if F2 is negative, it means it's positive since we are taking downward forces as positive. If the force is upwards, the truss loses contact with roller at D and hence breaks apart.")
+    if inputs["opposite_side_to_angle_theta"] < 0:
+        errors.append("Distance can't be negative")
+    if inputs["adjacent_side_to_angle_theta"] < 0:
+        errors.append("Distance can't be negative")
+
+    if errors:
+        for error in errors:
+            print(error)
+        return False
+    return True
+
+
+def main_thing():
+    #Ask the Question
+    display_question()
+    #Get ze inputs
+    inputs = getting_inputs()
+
+    # Step 3: Check for errors and other nonsense
+    if not checking_for_errors(inputs):
+        print("Errors detected in the inputs. Please restart and try again.")
+        return
+
+    # Step 4: Calculate angles
+    angles = finding_angles(
+        inputs["opposite_side_to_angle_theta"],
+        inputs["adjacent_side_to_angle_theta"]
+    )
+    print(f"Calculated Angles (in degrees): {angles[1]}, {angles[3]}, {angles[5]}")
+
+    # Step 5: Solve for forces at Joint B
+    joint_b_solution = solving_for_joint_b()
+    print("Solutions for Joint B:")
+    print(f"  Y-Equation: {joint_b_solution[0]}")
+    print(f"  X-Equation: {joint_b_solution[1]}")
+    print(f"  Solutions: {joint_b_solution[2]}")
+
+    # Step 6: Solve for forces at Joint C
+    joint_c_solution = solving_for_joint_c()
+    print("Solutions for Joint C:")
+    print(f"  X-Equation: {joint_c_solution[0]}")
+    print(f"  Y-Equation: {joint_c_solution[1]}")
+    print(f"  Solutions: {joint_c_solution[2]}")
+
+    # Step 7: Solve for forces at Joint D
+    joint_d_solution = solving_for_joint_d()
+    print("Solutions for Joint D:")
+    print(f"  Y-Equation: {joint_d_solution[1]}")
+    print(f"  Solution: {joint_d_solution[0]}")
+
+    # Final Output
+    print("\nSolution to the loaded truss problem has been determined successfully!")
+    print("Refer to the above outputs for details.")
+

@@ -1,5 +1,5 @@
 import math
-from sympy import symbols, Eq, solve
+from sympy import symbols, Eq, solve, sin, cos, tan, atan, rad, deg
 
 # Displaying the question
 def display_question():
@@ -8,75 +8,45 @@ def display_question():
 
 # Taking inputs from the user
 def getting_inputs():
-    print("Enter the following parameters")
-    distance_between_the_supports_a_and_d = float(input("Distance between the supports A and D: "))
-    horizontal_distance_between_d_and_c = float(input("Horizontal distance between D and C: "))
-    horizontal_distance_between_d_and_b = float(input("Horizontal distance between D and B: "))
-    f1 = float(input("Force F1: "))
-    f2 = float(input("Force F2: "))
-    opposite_side_to_angle_theta = float(input("Opposite side to angle theta: "))
-    adjacent_side_to_angle_theta = float(input("Adjacent side to angle theta: "))
+    print("Enter the following parameters (you can use numbers or variables, e.g., L, F):")
+    distance_between_the_supports_a_and_d = input("Distance between the supports A and D: ")
+    horizontal_distance_between_d_and_c = input("Horizontal distance between D and C: ")
+    horizontal_distance_between_d_and_b = input("Horizontal distance between D and B: ")
+    f1 = input("Force F1: ")
+    f2 = input("Force F2: ")
+    opposite_side_to_angle_theta = input("Opposite side to angle theta: ")
+    adjacent_side_to_angle_theta = input("Adjacent side to angle theta: ")
+
     return {
-        "distance_between_the_supports_a_and_d": distance_between_the_supports_a_and_d,
-        "horizontal_distance_between_d_and_c": horizontal_distance_between_d_and_c,
-        "horizontal_distance_between_d_and_b": horizontal_distance_between_d_and_b,
-        "f1": f1,
-        "f2": f2,
-        "opposite_side_to_angle_theta": opposite_side_to_angle_theta,
-        "adjacent_side_to_angle_theta": adjacent_side_to_angle_theta,
+        "distance_between_the_supports_a_and_d": symbols(distance_between_the_supports_a_and_d) if not distance_between_the_supports_a_and_d.replace('.', '').isdigit() else float(distance_between_the_supports_a_and_d),
+        "horizontal_distance_between_d_and_c": symbols(horizontal_distance_between_d_and_c) if not horizontal_distance_between_d_and_c.replace('.', '').isdigit() else float(horizontal_distance_between_d_and_c),
+        "horizontal_distance_between_d_and_b": symbols(horizontal_distance_between_d_and_b) if not horizontal_distance_between_d_and_b.replace('.', '').isdigit() else float(horizontal_distance_between_d_and_b),
+        "f1": symbols(f1) if not f1.replace('.', '').isdigit() else float(f1),
+        "f2": symbols(f2) if not f2.replace('.', '').isdigit() else float(f2),
+        "opposite_side_to_angle_theta": symbols(opposite_side_to_angle_theta) if not opposite_side_to_angle_theta.replace('.', '').isdigit() else float(opposite_side_to_angle_theta),
+        "adjacent_side_to_angle_theta": symbols(adjacent_side_to_angle_theta) if not adjacent_side_to_angle_theta.replace('.', '').isdigit() else float(adjacent_side_to_angle_theta),
     }
-
-# Error and nonsense handling
-def checking_for_errors(inputs):
-    errors = []
-    if inputs["distance_between_the_supports_a_and_d"] < 0:
-        errors.append("Distance can't be negative")
-    if inputs["horizontal_distance_between_d_and_c"] < 0:
-        errors.append("Distance can't be negative")
-    if inputs["horizontal_distance_between_d_and_b"] < 0:
-        errors.append("Distance can't be negative")
-    if inputs["f1"] < 0:
-        errors.append(
-            "Error: if F1 is negative, it means it's positive since we are taking downward forces as positive. If the force is upwards, the truss loses contact with roller at D and hence breaks apart.")
-    if inputs["f2"] < 0:
-        errors.append(
-            "Error: if F2 is negative, it means it's positive since we are taking downward forces as positive. If the force is upwards, the truss loses contact with roller at D and hence breaks apart.")
-    if inputs["opposite_side_to_angle_theta"] < 0:
-        errors.append("Distance can't be negative")
-    if inputs["adjacent_side_to_angle_theta"] < 0:
-        errors.append("Distance can't be negative")
-
-    if errors:
-        for error in errors:
-            print(error)
-        return False
-    return True
 
 # Calculating angles
 def finding_angles(params):
     opposite_side = params['opposite_side_to_angle_theta']
     adjacent_side = params['adjacent_side_to_angle_theta']
 
-    theta_1 = math.atan(opposite_side / adjacent_side)
-    theta_1_degrees = math.degrees(theta_1)
-
+    theta_1 = atan(opposite_side / adjacent_side)
     distance_to_e = params['distance_between_the_supports_a_and_d'] - (
-        params['horizontal_distance_between_d_and_c'] / math.tan(theta_1)
+        params['horizontal_distance_between_d_and_c'] / tan(theta_1)
     )
-    theta_2 = math.atan(distance_to_e / params['horizontal_distance_between_d_and_b'])
-    theta_2_degrees = math.degrees(theta_2)
+    theta_2 = atan(distance_to_e / params['horizontal_distance_between_d_and_b'])
+    theta_3 = atan(distance_to_e / params['horizontal_distance_between_d_and_c'])
 
-    theta_3 = math.atan(distance_to_e / params['horizontal_distance_between_d_and_c'])
-    theta_3_degrees = math.degrees(theta_3)
-
-    return theta_1_degrees, theta_2_degrees, theta_3_degrees
+    return deg(theta_1), deg(theta_2), deg(theta_3)
 
 # Solving for forces at Joint B
 def solving_for_joint_b(params, theta_2):
     force_in_a_b, force_in_b_c = symbols('force_in_a_b force_in_b_c')
 
-    y_equation_b = Eq(force_in_a_b * math.sin(math.radians(theta_2)) - params['f1'], 0)
-    x_equation_b = Eq(force_in_a_b * math.cos(math.radians(theta_2)) + force_in_b_c, 0)
+    y_equation_b = Eq(force_in_a_b * sin(rad(theta_2)) - params['f1'], 0)
+    x_equation_b = Eq(force_in_a_b * cos(rad(theta_2)) + force_in_b_c, 0)
 
     solutions_joint_b = solve([y_equation_b, x_equation_b], (force_in_a_b, force_in_b_c))
     return solutions_joint_b[force_in_a_b], solutions_joint_b[force_in_b_c]
@@ -85,84 +55,54 @@ def solving_for_joint_b(params, theta_2):
 def solving_for_joint_c(params, theta_3, theta_1, force_in_b_c_value):
     force_in_a_c, force_in_c_d, force_in_b_c = symbols('force_in_a_c force_in_c_d force_in_b_c')
 
-    # Modify the x_equation to equate to force_in_b_c instead of params['f1']
     x_equation_c = Eq(
-        force_in_a_c * math.cos(math.radians(theta_3)) + force_in_c_d * math.sin(math.radians(theta_1)),
-        force_in_b_c  # RHS now is force_in_b_c
+        force_in_a_c * cos(rad(theta_3)) + force_in_c_d * sin(rad(theta_1)),
+        force_in_b_c
     )
-
     y_equation_c = Eq(
-        force_in_a_c * math.sin(math.radians(theta_3)),
-        force_in_c_d * math.cos(math.radians(theta_1)) + params['f2']
+        force_in_a_c * sin(rad(theta_3)),
+        force_in_c_d * cos(rad(theta_1)) + params['f2']
     )
 
-    # Now substitute the provided value of force_in_b_c into both equations
     x_equation_c_substituted = x_equation_c.subs(force_in_b_c, force_in_b_c_value)
     y_equation_c_substituted = y_equation_c.subs(force_in_b_c, force_in_b_c_value)
 
-    # Print the substituted equations (for debugging cause why tf am i doing this)
-    print("Substituted x-equation:", x_equation_c_substituted)
-    print("Substituted y-equation:", y_equation_c_substituted)
-
-    # Solve the system of equations
     solutions_joint_c = solve([x_equation_c_substituted, y_equation_c_substituted], (force_in_a_c, force_in_c_d))
 
-    # Return the solutions for force_in_a_c and force_in_c_d
     return solutions_joint_c.get(force_in_a_c), solutions_joint_c.get(force_in_c_d)
-
-
 
 # Solving for forces at Joint D
 def solving_for_joint_d(params, theta_1, force_in_c_d_value):
     force_in_a_d, force_in_c_d = symbols('force_in_a_d force_in_c_d')
 
-    # Create the equation
-    y_equation = Eq(force_in_a_d + force_in_c_d * math.cos(math.radians(theta_1)), 0)
-
-    # Solve the equation symbolically (force_in_a_d in terms of force_in_c_d)
+    y_equation = Eq(force_in_a_d + force_in_c_d * cos(rad(theta_1)), 0)
     solution_joint_d = solve(y_equation, force_in_a_d)
 
-    # Substitute the value of force_in_c_d into the solution for force_in_a_d
     solution_for_a_d = solution_joint_d[0].subs(force_in_c_d, force_in_c_d_value)
 
     return solution_for_a_d
 
-
 def main_thing():
-    # Ask the Question
     display_question()
 
-    # Get the inputs
     inputs = getting_inputs()
 
-    # Check for errors and other nonsense
-    if not checking_for_errors(inputs):
-        print("Errors detected in the inputs. Please restart and try again.")
-        return
-
-    # Calculate angles
     angles = finding_angles(inputs)
     print(f"Calculated Angles (in degrees): {angles[0]}, {angles[1]}, {angles[2]}")
 
-    # Solve for forces at Joint B
     joint_b_solution = solving_for_joint_b(inputs, angles[1])
     print("Solutions for Joint B:")
     print(f"  Force in AB: {joint_b_solution[0]}")
     print(f"  Force in BC: {joint_b_solution[1]}")
 
-    # Solve for forces at Joint C
     joint_c_solution = solving_for_joint_c(inputs, angles[2], angles[0], joint_b_solution[1])
     print("Solutions for Joint C:")
     print(f"  Force in AC: {joint_c_solution[0]}")
     print(f"  Force in CD: {joint_c_solution[1]}")
 
-    # Solve for forces at Joint D
     joint_d_solution = solving_for_joint_d(inputs, angles[0], joint_c_solution[1])
     print("Solutions for Joint D:")
     print(f"  Force in AD: {joint_d_solution}")
-
-
-
 
 if __name__ == "__main__":
     main_thing()

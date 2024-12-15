@@ -4,7 +4,7 @@ from sympy.abc import alpha
 import re
 import matplotlib.pyplot as plt
 import numpy as np
-#Checking if my idiotic github thing
+
 
 
 def create_graph(R, theta, force_length):

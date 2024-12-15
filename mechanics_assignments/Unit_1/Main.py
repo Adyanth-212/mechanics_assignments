@@ -4,7 +4,7 @@ from sympy.abc import alpha
 import re
 import matplotlib.pyplot as plt
 import numpy as np
-#Checking if my idiotic github thing whatever is working why is my dad forcing me to do this and die
+#Checking if my idiotic github thing w dgfdgfdg dsfgfdgfdg hatever is working why is my dad forcing me to do this and die
 
 
 def create_graph(R, theta, force_length):

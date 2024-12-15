@@ -7,20 +7,38 @@ def display_question():
     question = """
     Determine the reactions at A and C for the beam subjected to the combination
     of point and distributed loads.
+    (Note: All forces are in Kilo Newtons, However the weight entered should be in Kilograms,
+    In this question All upward forces are taken as Positive.
+    The Magnitude of applied force on the beam is in unit KN/M)
     """
     print("The Question is: ")
     print(question)
 
 
 def get_input(prompt):
-    # Allow symbolic or numeric input
-    user_input = input(prompt)
-    try:
-        # Try converting to a float
-        return float(user_input)
-    except ValueError:
-        # If not a float, assume it is a symbolic variable
-        return symbols(user_input)
+
+    while True:
+        user_input = input(prompt)
+        try:
+            # Try converting to a float first
+            return float(user_input)
+        except ValueError:
+            try:
+                # Try symbolic conversion
+                symbolic_input = sympify(user_input)
+
+                # Check if the input is a pure symbol (like 'L', 'F')
+                if isinstance(symbolic_input, Symbol):
+                    return symbolic_input
+
+                # Check for negative values
+                if symbolic_input.is_number and symbolic_input < 0:
+                    print("Error: Input cannot be negative. Please try again.")
+                    continue
+
+                return symbolic_input
+            except Exception:
+                print("Invalid input. Please enter a numeric value or a valid symbolic expression.")
 
 
 def getting_the_inputs():
@@ -64,9 +82,52 @@ def getting_the_inputs():
     }
 
 
+def validate_inputs(inputs):
+    errors = []
+
+    # List of inputs to check for non-negative values
+    non_negative_checks = [
+        ("length_of_beam", "Length of beam"),
+        ("magnitude_of_applied_force_on_beam", "Magnitude of applied force"),
+        ("length_of_rectangular_parts_of_force", "Length of rectangular parts of force"),
+        ("weight_of_body_at_pulley", "Weight of body at pulley"),
+        ("length_of_triangular_part_of_force", "Length of triangular part of force"),
+        ("total_length_of_force_applied", "Total length of force applied"),
+        ("distance_between_end_of_beam_and_roller_support_at_C", "Distance between end of beam and roller support"),
+        ("distance_between_C_and_point_at_which_cable_touches_B", "Distance between C and cable touch point"),
+        ("length_between_start_of_beam_and_hinge_support_at_A", "Length between start of beam and hinge support")
+    ]
+
+    # Validate non-negative inputs
+    for key, description in non_negative_checks:
+        value = inputs.get(key)
+        # Skip symbolic inputs
+        if isinstance(value, str):
+            continue
+
+        if value is not None and value < 0:
+            errors.append(f"Error: {description} cannot be negative. Current value: {value}")
+
+    # Additional logical checks
+    if inputs.get("total_length_of_force_applied") > inputs.get("length_of_beam"):
+        errors.append(f"Error: Total length of force applied ({inputs.get('total_length_of_force_applied')}) "
+                      f"cannot exceed beam length ({inputs.get('length_of_beam')})")
+
+    # Return errors
+    return errors
+
+
 def mainthing():
     display_question()
     inputs = getting_the_inputs()
+
+    # Validate inputs before proceeding
+    validation_errors = validate_inputs(inputs)
+    if validation_errors:
+        print("Input Validation Failed. Please correct the following issues:")
+        for error in validation_errors:
+            print(error)
+        return  # Stop execution if there are validation errors
 
     answer = solver(
         inputs["magnitude_of_applied_force_on_beam"],
@@ -84,5 +145,4 @@ def mainthing():
     print(results)
 
 
-if __name__ == "__main__":
-    mainthing()
+mainthing()

@@ -1,4 +1,6 @@
-from sympy import symbols
+from symtable import Symbol
+
+from sympy import symbols, sympify
 from solver import solver
 import matplotlib.pyplot as plt
 

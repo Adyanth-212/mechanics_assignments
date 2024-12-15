@@ -1,12 +1,11 @@
 from sympy import symbols, Eq, solve
-import math
 
 
 class solver:
     def __init__(self, magnitude_of_applied_force_on_beam, length_of_beam, length_of_rectangular_parts_of_force,
                  weight_of_body_at_pulley, length_of_triangular_part_of_force,
                  length_between_start_of_beam_and_hinge_support_at_A, distance_between_force_and_B,
-                 total_length_of_force_applied, length_between_A_and_C):  # Add this parameter
+                 total_length_of_force_applied, length_between_A_and_C):
         self.magnitude_of_applied_force_on_beam = magnitude_of_applied_force_on_beam
         self.length_of_beam = length_of_beam
         self.length_of_rectangular_parts_of_force = length_of_rectangular_parts_of_force
@@ -15,16 +14,13 @@ class solver:
         self.length_between_start_of_beam_and_hinge_support_at_A = length_between_start_of_beam_and_hinge_support_at_A
         self.distance_between_force_and_B = distance_between_force_and_B
         self.total_length_of_force_applied = total_length_of_force_applied
-        self.length_between_A_and_C = length_between_A_and_C  # Store this new attribute
+        self.length_between_A_and_C = length_between_A_and_C
 
     def y_equations(self, hinge_reaction_at_A_in_Y_direction, Normal_force_at_C):
-        # Calculate reactions and force values
         reaction_1 = self.magnitude_of_applied_force_on_beam * self.length_of_rectangular_parts_of_force
         reaction_2 = self.magnitude_of_applied_force_on_beam * (1 / 2) * self.length_of_triangular_part_of_force
-        force_at_B = (self.weight_of_body_at_pulley / 2 * 9.81) / 1000
+        force_at_B = (self.weight_of_body_at_pulley / 2 * 9.81) / 1000  # Treat force symbolically if needed
 
-
-        # Return the calculated values along with the equation for y
         equation_for_y = Eq(
             hinge_reaction_at_A_in_Y_direction +
             Normal_force_at_C +
@@ -33,10 +29,7 @@ class solver:
             reaction_1,
             0
         )
-        print(equation_for_y)
-        print(reaction_2)
-        print(reaction_1)
-        print(force_at_B)
+
         return equation_for_y, reaction_1, reaction_2, force_at_B
 
     def moment_equations(self, reaction_1, reaction_2, force_at_B, hinge_reaction_at_A_in_Y_direction, Normal_force_at_C):
@@ -45,8 +38,9 @@ class solver:
                 (self.length_of_rectangular_parts_of_force - self.length_between_start_of_beam_and_hinge_support_at_A) +
                 (1 / 3 * self.length_of_triangular_part_of_force)
         )
-        distance_between_A_and_reaction_1 = (
+        distance_between_A_and_Reaction_1 = (
                 point_for_reaction_1 - self.length_between_start_of_beam_and_hinge_support_at_A
+
         )
         distance_between_B_and_A = (
                 self.distance_between_force_and_B +
@@ -55,10 +49,10 @@ class solver:
         )
 
         equation_for_moment = Eq(
-            (-1 * reaction_1 * distance_between_A_and_reaction_1) +
+            (-1 * reaction_1 * (self.length_between_start_of_beam_and_hinge_support_at_A)) +
             (-1 * reaction_2 * distance_between_reaction_2_and_A) +
-            distance_between_B_and_A * (force_at_B) +
-            Normal_force_at_C * self.length_between_A_and_C,
+            (distance_between_B_and_A * force_at_B) +
+            (Normal_force_at_C * self.length_between_A_and_C),
             0
         )
         print(equation_for_moment)
@@ -69,14 +63,17 @@ class solver:
     def solve_equations(self):
         # Use sympy symbols for the unknown variables
         hinge_reaction_at_A_in_Y_direction, Normal_force_at_C = symbols(
-            'hinge_reaction_at_A_in_Y_direction Normal_force_at_C')
+            'hinge_reaction_at_A_in_Y_direction Normal_force_at_C'
+        )
 
+        # Get y-equation and reactions
         eq_y, reaction_1, reaction_2, force_at_B = self.y_equations(
             hinge_reaction_at_A_in_Y_direction,
             Normal_force_at_C
         )
 
-        eq_moment, _, _, = self.moment_equations(
+        # Get moment-equation
+        eq_moment, _, _ = self.moment_equations(
             reaction_1,
             reaction_2,
             force_at_B,
@@ -84,7 +81,9 @@ class solver:
             Normal_force_at_C
         )
 
-        # Solve the system of equations by passing each equation separately
+        # Solve the system of equations
         solutions = solve([eq_y, eq_moment], (hinge_reaction_at_A_in_Y_direction, Normal_force_at_C))
 
         return solutions
+
+

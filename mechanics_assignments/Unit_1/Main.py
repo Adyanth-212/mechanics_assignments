@@ -180,13 +180,26 @@ def main():
     print(question)
 
     # Initialize parameters
-    params = {
-        'theta': input("Enter the angle theta (can be an expression like '2*theta' or a numeric value in degrees): "),
-        'R': input("Enter the radius R (can be an expression like 'R/2' or '2*R'): "),
-        'Force': input("Enter the Force F (can be an expression like '2*F'): ")
-    }
+    while True:
+        params = {
+            'theta': input(
+                "Enter the angle theta (can be an expression like '2*theta' or a numeric value in degrees): "),
+            'R': input("Enter the radius R (can be an expression like 'R/2' or '2*R'): "),
+            'Force': input("Enter the Force F (can be an expression like '2*F'): ")
+        }
 
-    # Process inputs
+        # Simple numeric check - assuming user enters a plain number
+        if params['R'].replace('.', '', 1).isdigit():  # Allows for decimal numbers
+            R_value = float(params['R'])
+            if R_value >= 0:
+                break
+            else:
+                print("Please enter a correct value. Distance cannot be negative.")
+        else:
+            print("Please enter a positive value for R, How can distance be negative?")
+
+
+# Process inputs
     check_input(params)
 
     # Calculate triangle coordinates

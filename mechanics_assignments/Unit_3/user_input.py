@@ -45,17 +45,17 @@ def get_input(prompt):
 
 def getting_the_inputs():
     # Get necessary inputs from the user
-    length_of_beam = get_input("Length of the beam (e.g., 10 or L): ")
-    magnitude_of_applied_force_on_beam = get_input("Magnitude of applied force on beam (e.g., 20 or F): ")
-    length_of_rectangular_parts_of_force = get_input("Length of rectangular part of force (e.g., 5 or R): ")
-    weight_of_body_at_pulley = get_input("Weight of the body at the pulley (e.g., 100 or W): ")
-    total_length_of_force_applied = get_input("Total Length of Force Applied (e.g., 8 or T): ")
+    length_of_beam = get_input("Length of the beam (e.g., 10:) ")
+    magnitude_of_applied_force_on_beam = get_input("Magnitude of applied force on beam (e.g., 20): ")
+    length_of_rectangular_parts_of_force = get_input("Length of rectangular part of force (e.g., 5): ")
+    weight_of_body_at_pulley = get_input("Weight of the body at the pulley (e.g., 100): ")
+    total_length_of_force_applied = get_input("Total Length of Force Applied (e.g., 8): ")
     distance_between_end_of_beam_and_roller_support_at_C = get_input(
-        "Distance between end of beam and roller support at C (e.g., 2 or D): ")
+        "Distance between end of beam and roller support at C (e.g., 2): ")
     distance_between_C_and_point_at_which_cable_touches_B = get_input(
-        "Distance between C and point at which cable touches B (e.g., 3 or P): ")
+        "Distance between C and point at which cable touches B (e.g., 3): ")
     length_between_start_of_beam_and_hinge_support_at_A = get_input(
-        "Length between start of beam and hinge support at A (e.g., 1 or A): ")
+        "Length between start of beam and hinge support at A (e.g., 1): ")
 
     # Derived values based on inputs
     length_of_triangular_part_of_force = total_length_of_force_applied - length_of_rectangular_parts_of_force
